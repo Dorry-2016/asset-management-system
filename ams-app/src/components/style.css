@@ -1,0 +1,74 @@
+/* src/index.css */
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Manrope:wght@200..800&family=Outfit:wght@100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+.loginPage {
+   background: linear-gradient(
+  135deg,
+  #f3f6f8 0%,
+  #c9f0ea 30%,
+  #57d2ff 60%,
+  #d5dbff 100%
+);
+    background-size: cover;
+    background-repeat: no-repeat;
+    font-family: 'lexend', sans-serif;
+     font-weight: 200;
+    /* font-family: 'Poppins'; */
+    
+    /* background-size: 100% 120%; */
+}
+
+.loginForm {
+    background-color: white ;
+    color: black;
+    width: 400px;
+    font-family: 'lexend', sans-serif;
+     font-weight: 200;
+     
+    
+}
+.remember-forgot {
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem; 
+}
+
+.sidebar-text {
+  font-size: 13px;
+}
+.burnt-orange-btn {
+  background-color: #ec4917;
+  
+  color: white;
+  border: none;
+  border-radius: 10px;
+}
+
+.burnt-orange-btn:hover {
+  background-color: #aa3405;
+}
+.burnt-red-btn{
+    background-color: #f01a0a;
+    color: white;
+    font-size: 18px;
+    padding: 5px 10px;
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+.employee_image {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+.btn-yellow {
+  background-color: #ffeb3b;
+  color: #000;
+  border: none;
+}
+.btn-yellow:hover {
+  background-color: #fdd835;
+}
+
