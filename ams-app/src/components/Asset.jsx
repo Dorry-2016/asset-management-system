@@ -152,8 +152,6 @@ const Asset = () => {
       <div className='d-flex justify-content-center'>
         <h2>Asset List</h2>
       </div>
-      
-        {/* <Link to="/dashboard/add_asset" className='burnt-red-btn'>+</Link> */}
       <div className="d-flex mt-3 mb-3">
         <input
           type="text"
@@ -180,7 +178,7 @@ const Asset = () => {
           <option value="Active">Active</option>
           <option value="Inactive">In Use</option>
           <option value="Maintenance">Maintenance</option>
-          <option value="Maintenance">Retired</option>
+          <option value="Retired">Retired</option>
         </select>
          <div className="flex-grow-1" />
          

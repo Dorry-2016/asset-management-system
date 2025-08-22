@@ -49,7 +49,6 @@ const Login = () => {
             })
             .catch(err => console.log(err))
     };
-
   return (
       <div className='d-flex justify-content-center align-items-center vh-100 loginPage'>
           <h2 style={{
@@ -63,7 +62,6 @@ const Login = () => {
           </h2>
           <div>
                <QuoteSummary /> 
-          
           <div className='p-5 border loginForm'
               style={{
                   width: '500px',

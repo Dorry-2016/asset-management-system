@@ -2,29 +2,37 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { FaUserShield, FaUsers, FaListAlt, FaBox } from 'react-icons/fa'
+import './style.css';
 import DonutChart from './DonutChart';
-import BarGraph from './BarGraph';       
+import BarGraph from './BarGraph';
+
+      
 
 const cardStyles = {
   admin: {
-    backgroundColor: '#cfe2ff',
-    color: '#084298',
+    backgroundColor: 'white',
+    color: 'black',
     iconBg: '#084298',
   },
   employee: {
-    backgroundColor: '#d1e7dd',
-    color: '#0f5132',
-    iconBg: '#0f5132',
+    backgroundColor: 'white',
+    color: 'black',
+    iconBg: '#084298',
   },
   category: {
-    backgroundColor: '#fff3cd',
-    color: '#664d03',
-    iconBg: '#664d03',
+    backgroundColor: 'white',
+    color: 'black',
+    iconBg: '#084298',
   },
   asset: {
-    backgroundColor: '#f8d7da',
-    color: '#842029',
-    iconBg: '#842029',
+    backgroundColor: 'white',
+    color: 'black',
+    iconBg: '#084298',
+  },
+   maintenance: {
+    backgroundColor: 'white',
+    color: 'black',
+    iconBg: '#084298',
   },
 };
 
@@ -33,6 +41,11 @@ const Home = () => {
   const [employeeTotal, setEmployeeTotal] = useState(0);
   const [categoryTotal, setCategoryTotal] = useState(0);
   const [assetTotal, setAssetTotal] = useState(0);
+  const [assetMaintenanceTotal, setAssetMaintenanceTotal] = useState(0);
+  const [categoryData, setCategoryData] = useState([]);
+  const [assetNameData, setAssetNameData] = useState([]);
+
+
 
   useEffect(() => {
     axios.get('http://localhost:5000/auth/admin_count')
@@ -51,19 +64,33 @@ const Home = () => {
       .then(result => {
         if (result.data.Status) setAssetTotal(result.data.Result[0].asset);
       });
+    axios.get('http://localhost:5000/auth/asset_maintenance_count')
+    .then(result => {
+    if (result.data.Status) setAssetMaintenanceTotal(result.data.Result[0].asset);
+    });
+     axios.get("http://localhost:5000/auth/asset_distribution/category")
+    .then(result => {
+      if (result.data.Status) setCategoryData(result.data.Result);
+    });
+
+  axios.get("http://localhost:5000/auth/asset_distribution/name")
+    .then(result => {
+      if (result.data.Status) setAssetNameData(result.data.Result);
+    });
+
   }, []);
 
   const StatCard = ({ title, total, icon: Icon, style }) => (
     <div
-      className="d-flex flex-column justify-content-between p-4 rounded shadow-sm"
+      className="d-flex align-items-center p-3 rounded shadow-sm"
       style={{
         backgroundColor: style.backgroundColor,
         color: style.color,
         minWidth: 220,
         flex: '1 1 220px',
         maxWidth: 250,
-        height: 140,
-        margin: 8
+        minHeight: 80,
+        // margin: 8
       }}
     >
       <div className="d-flex align-items-center">
@@ -71,16 +98,17 @@ const Home = () => {
           style={{
             backgroundColor: style.iconBg,
             borderRadius: '50%',
-            width: 40,
-            height: 40,
+            width: 50,
+            height: 50,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginRight: 12,
+            marginRight: 15,
             color: 'white',
+            flexShrink: 0
           }}
         >
-          <Icon size={20} />
+          <Icon size={22} />
         </div>
         <h5 className="mb-0">{title}</h5>
       </div>
@@ -91,11 +119,15 @@ const Home = () => {
   );
 
   return (
-    
-    <div className="container py-4" style={{ paddingTop: '80px' }}>
-      <h4 className="mb-4">Welcome to the Asset Management System</h4>
+    <div className="container py-4" style={{
+      paddingTop: '80px',
+      backgroundColor: '#F2F3F9',
+      minHeight: '100vh' 
 
-      {/* Cards */}
+    }}>
+      <h4 className="mb-0">Welcome to the Asset Management System</h4>
+      <h6 className="mb-4">Track and manage channel transactions here</h6>
+
       <div className="d-flex flex-wrap justify-content-between">
         <StatCard 
           title="Total Admins" 
@@ -103,12 +135,12 @@ const Home = () => {
           icon={FaUserShield} 
           style={cardStyles.admin} 
         />
-        <StatCard 
+        {/* <StatCard 
           title="Total Employees" 
           total={employeeTotal} 
           icon={FaUsers} 
           style={cardStyles.employee} 
-        />
+        /> */}
         <StatCard 
           title="Total Categories" 
           total={categoryTotal} 
@@ -121,20 +153,32 @@ const Home = () => {
           icon={FaBox} 
           style={cardStyles.asset} 
         />
-      </div>
+        <StatCard 
+      title="Assets Under Maintenance" 
+      total={assetMaintenanceTotal} 
+       icon={FaBox}
+       style={cardStyles.maintenance} 
+/>
 
-      {/* Charts Section */}
-      <div className="row mt-5 g-4">
+      </div>
+      <div className="row mt-3 g-2">
         <div className="col-md-6 d-flex justify-content-center">
-          <div className="p-3 border shadow-sm rounded" style={{ maxWidth: 400, width: '100%' }}>
-            <h5 className='mb-3 text-center'>Asset Distribution by Category</h5>
-            <DonutChart />
+          <div className=""
+            style={{
+              maxWidth: 400,
+              width: '100%',
+              backgroundColor: "#fff",
+              
+              
+
+            }}>
+            <DonutChart data={categoryData} />
           </div>
         </div>
         <div className="col-md-6 d-flex justify-content-center">
           <div className="p-3 border shadow-sm rounded" style={{ maxWidth: 400, width: '100%' }}>
-            <h5 className='mb-3 text-center'>Asset Distribution</h5>
-            <BarGraph />
+            <h5 className='mb-3 text-center'>Asset Distribution by name</h5>
+            <BarGraph data={assetNameData} />
           </div>
         </div>
       </div>

@@ -292,6 +292,37 @@ router.get('/asset_count', (req, res) => {
         return res.json({Status: true, Result: result})
     })
 })
+router.get('/asset_maintenance_count', (req, res) => {
+    const sql = "select count(asset_id) as asset from assets WHERE status = 'maintenance'";
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error " + err});
+        return res.json({Status: true, Result: result});
+    });
+});
+router.get("/asset_distribution/category", (req, res) => {
+  const sql = `
+    SELECT c.name AS category, COUNT(a.asset_id) AS total
+    FROM assets a
+    JOIN category c ON a.category_id = c.id
+    GROUP BY c.name
+  `;
+  con.query(sql, (err, result) => {
+    if (err) return res.json({ Status: false, Error: err });
+    return res.json({ Status: true, Result: result });
+  });
+});
+router.get("/asset_distribution/name", (req, res) => {
+  const sql = `
+    SELECT name AS asset, COUNT(*) AS total
+    FROM assets
+    GROUP BY name
+  `;
+  con.query(sql, (err, result) => {
+    if (err) return res.json({ Status: false, Error: err });
+    return res.json({ Status: true, Result: result });
+  });
+});
+
 router.delete('/delete_category/:id', (req, res) => {
     const id = req.params.id;
     const sql = "DELETE from category where id = ?"

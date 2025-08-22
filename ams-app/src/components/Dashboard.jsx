@@ -91,19 +91,16 @@ const Dashboard = () => {
               </li>
             </ul>
             <div className="mt-auto w-100 d-flex justify-content-end">
-    <MenuOpenIcon
+    {/* <MenuOpenIcon
       style={{ cursor: 'pointer' }}
       onClick={() => setCollapsed(!collapsed)}
-    />
+    /> */}
   </div>
           </div>
         </div>
         <div className="col p-0 m-0">
           <div className='p-2 d-flex justify-content-between align-items-center shadow position-relative'>
-            {/* <MenuOpenIcon  className="me-2"
-      style={{ cursor: 'pointer', marginRight: '10px' }}
-      onClick={() => setCollapsed(!collapsed)}
-    />  */}
+          
           </div>
           <Outlet />
         </div>

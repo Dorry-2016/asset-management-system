@@ -71,4 +71,22 @@
 .btn-yellow:hover {
   background-color: #fdd835;
 }
+.graphbox{
+  position: relative;
+  width: 100%;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 2fr 2fr;
+  grid-gap: 30px;
+  min-height: 300px;
+}
+.graphbox .box{
+  position: relative;
+  background: white;
+  padding: 20px;
+  width: 100%;
+  /* box-shadow: 0 7px 25px; */
+  border-radius: 20px;
+
+}
 
