@@ -137,7 +137,7 @@ const Addasset = () => {
     category_id: "",
     purchasedate: "",
     location: "",
-    status: "active",
+    status: "active ",
   });
 
   const [category, setCategory] = useState([]);
@@ -155,7 +155,21 @@ const Addasset = () => {
       .catch(err => {
         console.log(err)
       });
+    axios.get('http://localhost:5000/admin/latest_asset')
+      .then(result => {
+        if (result.data.Status) {
+          const lastId = result.data.latestId;
+          const nextId = generateNextId(lastId);
+          setAsset(prev => ({ ...prev, asset_id: nextId }));
+        }
+      })
+      .catch(err => console.log(err));
   }, []);
+    const generateNextId = (lastId) => {
+    if (!lastId) return "AST-001"; 
+    const num = parseInt(lastId.split("-")[1]) + 1;
+    return `AST-${num.toString().padStart(3, "0")}`;
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -166,6 +180,7 @@ const Addasset = () => {
     formData.append('purchasedate', asset.purchasedate);
     formData.append('location', asset.location);
     formData.append('status', asset.status);
+    formData.append('image', asset.image);
 
     axios.post('http://localhost:5000/admin/add_asset', formData)
       .then(result => {
@@ -182,9 +197,7 @@ const Addasset = () => {
     <div className='d-flex justify-content-center align-items-center min-vh-100 bg-light'>
       <div className='p-4 rounded w-75 shadow bg-white'>
         <h3 className='text-center mb-4'>Add New Asset</h3>
-
         <form onSubmit={handleSubmit}>
-
           <div className='row g-3'>
             <div className="col-md-6">
               <label htmlFor="inputAssetId" className='form-label fw-semibold'>Asset ID <span className="text-danger">*</span></label>
@@ -195,7 +208,8 @@ const Addasset = () => {
                 placeholder='Enter Asset ID'
                 required
                 value={asset.asset_id}
-                onChange={e => setAsset({ ...asset, asset_id: e.target.value })}
+                readOnly
+                // onChange={e => setAsset({ ...asset, asset_id: e.target.value })}
               />
             </div>
 
@@ -211,6 +225,7 @@ const Addasset = () => {
                 onChange={e => setAsset({ ...asset, name: e.target.value })}
               />
             </div>
+            
 
             <div className="col-md-6">
               <label htmlFor="category" className='form-label fw-semibold'>Category <span className="text-danger">*</span></label>
@@ -235,10 +250,23 @@ const Addasset = () => {
                 id="inputPurchaseDate"
                 className='form-control'
                 required
+                max={new Date().toISOString().split("T")[0]}
                 value={asset.purchasedate}
                 onChange={e => setAsset({ ...asset, purchasedate: e.target.value })}
               />
             </div>
+            <div className="col-md-6">
+             <label htmlFor="inputImage" className='form-label fw-semibold'>
+                Asset Image <span className="text-danger">*</span>
+                 </label>
+              <input type="file"
+                className='form-control rounded-0'
+                id='inputGroupFile01'
+                name='image'
+                required
+                onChange={e => setAsset({ ...asset, image: e.target.files[0] })}
+              />
+          </div>
 
             <div className="col-md-6">
               <label htmlFor="inputLocation" className='form-label fw-semibold'>Location <span className="text-danger">*</span></label>
@@ -249,6 +277,8 @@ const Addasset = () => {
                 placeholder='Enter Location'
                 required
                 value={asset.location}
+                pattern="[A-Za-z\s]+" 
+                title="Location must contain only letters"
                 onChange={e => setAsset({ ...asset, location: e.target.value })}
               />
             </div>
@@ -263,17 +293,23 @@ const Addasset = () => {
                 onChange={e => setAsset({ ...asset, status: e.target.value })}
               >
                 <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
                 <option value="maintenance">Maintenance</option>
                 <option value="retired">Retired</option>
               </select>
+              
             </div>
           </div>
 
-          <div className='mt-4 d-flex justify-content-end'>
+          <div className='mt-4 d-flex justify-content-end gap-2'>
             <button type='submit' className='btn btn-primary px-4 py-2'>
               Add Asset
             </button>
+            <button 
+                type='button' 
+                 className='btn btn-outline-secondary px-4 py-2'
+                  onClick={() => navigate('/dashboard/asset')}
+                 >Cancel
+               </button>
           </div>
         </form>
       </div>

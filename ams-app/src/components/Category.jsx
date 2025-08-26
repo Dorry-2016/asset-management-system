@@ -40,14 +40,14 @@ const Category = () => {
           <thead>
             <tr>
               <th>Name</th>
-                <th>Action</th>
+                <th style= {{width:"120px"}}>Action</th>
             </tr>
           </thead>
           <tbody>
-            {
-              category.map(c => (
+            {category.map(c => (
                 <tr>
-                  <td>{c.name}</td>
+                <td>{c.name}</td>
+                <td>
                   <Link
                     to={`/dashboard/edit_category/` + c.id}
                      className="btn btn-primary btn-sm me-2"
@@ -60,9 +60,9 @@ const Category = () => {
                onClick={() => handleDelete(c.id)}
             delete
                >
-              <i className="bi bi-trash"></i>
-                                      
-                </button>
+                    <i className="bi bi-trash"></i>    
+                  </button>
+                  </td>
                 </tr>
                  ))
                     }

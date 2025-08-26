@@ -210,11 +210,10 @@ const Editasset = () => {
                   <input
                       type="text"
                       id="inputLocation"
-                      className='form-select'
+                      className='form-control'
                       placeholder='Enter Location'
                       value={asset.location}  
-              onChange={(e) => setAsset({ ...asset, location: e.target.value })}
-              
+                      onChange={(e) => setAsset({ ...asset, location: e.target.value })}
                   />
                   </div>
                   <div className='col-12'>
@@ -228,11 +227,16 @@ const Editasset = () => {
                       onChange={(e) => setAsset({ ...asset, status: e.target.value })}
                   />
             </div>
-          <div className='col-12'>
-            
-            <button type='submit' className='btn w-100 rounded-0 mb-2 burnt-orange-btn'>
+          <div className='mt-4 d-flex justify-content-end gap-2'>
+            <button type='submit' className='btn btn-outline-secondary px-4 py-2 burnt-orange-btn'>
               Edit Asset
             </button>
+            <button 
+                type='button' 
+                 className='btn btn-outline-secondary px-4 py-2'
+                  onClick={() => navigate('/dashboard/asset')}
+                 >Cancel
+               </button>
           </div>
         </form>
       </div>

@@ -20,14 +20,31 @@ const BarGraph = () => {
   }, []);
 
   return (
-    <div style={{ backgroundColor: "#fff", padding: "20px", borderRadius: "10px" }}>
-    <BarChart width={350} height={300} data={data}>
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="asset" />
-      <YAxis />
-      <Tooltip />
-      <Legend />
-      <Bar dataKey="value" fill="#8884d8" />
+    <div style={{
+      backgroundColor: "#fff",
+      padding: "20px",
+      borderRadius: "10px"
+    }}>
+       <h6 style={{ textAlign: "center", marginBottom: "10px" }}>
+      Asset Distribution by Name </h6>
+    <BarChart width={350} height={300} data={data} barSize={40}>
+      <XAxis dataKey="asset" axisLine={false} tickLine={false}/>
+      <YAxis  hide />
+        <Tooltip cursor={{ fill: "rgba(0,0,0,0.05)" }} />
+         <Bar
+          dataKey="value"
+          fill="#60a5fa"
+          radius={[5, 5, 0, 0]} // rounded top corners
+        >
+          {data.map((entry, index) => (
+            <cell
+              key={`cell-${index}`}
+              fill={index % 2 === 0 ? "#bfdbfe" : "#1d4ed8"}
+            />
+          ))}
+        </Bar>
+      {/* <Legend /> */}
+      {/* <Bar dataKey="value" fill="#8884d8" /> */}
     </BarChart>
     </div>
   );

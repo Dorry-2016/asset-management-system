@@ -6,13 +6,12 @@ import './style.css';
 import DonutChart from './DonutChart';
 import BarGraph from './BarGraph';
 
-      
-
 const cardStyles = {
   admin: {
     backgroundColor: 'white',
     color: 'black',
     iconBg: '#084298',
+    
   },
   employee: {
     backgroundColor: 'white',
@@ -45,8 +44,6 @@ const Home = () => {
   const [categoryData, setCategoryData] = useState([]);
   const [assetNameData, setAssetNameData] = useState([]);
 
-
-
   useEffect(() => {
     axios.get('http://localhost:5000/auth/admin_count')
       .then(result => {
@@ -77,9 +74,7 @@ const Home = () => {
     .then(result => {
       if (result.data.Status) setAssetNameData(result.data.Result);
     });
-
   }, []);
-
   const StatCard = ({ title, total, icon: Icon, style }) => (
     <div
       className="d-flex align-items-center p-3 rounded shadow-sm"
@@ -110,12 +105,14 @@ const Home = () => {
         >
           <Icon size={22} />
         </div>
-        <h5 className="mb-0">{title}</h5>
-      </div>
-      <div className="mt-3 text-end">
+         <div className="d-flex flex-column">
+           <h6 className="mb-1">{title}</h6>
+      
         <h2 className="mb-0" style={{ fontWeight: 'bold' }}>{total}</h2>
       </div>
-    </div>
+      </div>
+      </div>
+      
   );
 
   return (
@@ -158,30 +155,33 @@ const Home = () => {
       total={assetMaintenanceTotal} 
        icon={FaBox}
        style={cardStyles.maintenance} 
-/>
-
+      />
       </div>
       <div className="row mt-3 g-2">
         <div className="col-md-6 d-flex justify-content-center">
           <div className=""
             style={{
-              maxWidth: 400,
+              maxWidth: 500,
               width: '100%',
+              height: '100px',
               backgroundColor: "#fff",
-              
-              
-
             }}>
             <DonutChart data={categoryData} />
           </div>
         </div>
         <div className="col-md-6 d-flex justify-content-center">
-          <div className="p-3 border shadow-sm rounded" style={{ maxWidth: 400, width: '100%' }}>
-            <h5 className='mb-3 text-center'>Asset Distribution by name</h5>
+          <div className=""
+            style={{
+              maxWidth: 500,
+              width: '100%',
+                height: '100px',
+
+            }}>
             <BarGraph data={assetNameData} />
           </div>
         </div>
       </div>
+
     </div>
   );
 };

@@ -105,6 +105,7 @@ const Asset = () => {
   const [filterStatus, setFilterStatus] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [selectedAsset, setSelectedAsset] = useState(null);
 
   const navigate = useNavigate();
 
@@ -181,9 +182,6 @@ const Asset = () => {
           <option value="Retired">Retired</option>
         </select>
          <div className="flex-grow-1" />
-         
-
-        
         <Link
           to="/dashboard/add_asset"
           className="burnt-red-btn d-inline-flex align-items-center justify-content-center"
@@ -208,6 +206,7 @@ const Asset = () => {
               <th>Purchase date</th>
               <th>Status</th>
               <th>Category</th>
+              <th>Image</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -225,8 +224,17 @@ const Asset = () => {
                   <td>{e.purchasedate?.split('T')[0]}</td>
                   <td>{e.status}</td>
                   <td>{e.category_name}</td>
+                  <td><img
+                    src={`http://localhost:5000/Images/${e.image}`}
+                    className="asset_image"
+                    alt={e.name} 
+                     
+                  /></td>
                   <td>
-                    <button className="btn btn-warning btn-sm me-2" title="view">
+                    <button className="btn btn-warning btn-sm me-2"
+                      title="view"
+                       onClick={() => setSelectedAsset(e)}
+                    >
                       <i className="bi bi-eye"></i>
                     </button>
                     <Link
@@ -272,6 +280,31 @@ const Asset = () => {
           </li>
         </ul>
       </nav>
+      {selectedAsset && (
+        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <button type="button" className="btn-close" onClick={() => setSelectedAsset(null)}></button>
+              </div>
+              <div className="modal-body">
+                <p><strong>Name:</strong> {selectedAsset.name}</p>
+                <p><strong>Location:</strong> {selectedAsset.location}</p>
+                <p><strong>Status:</strong> {selectedAsset.status}</p>
+                <p><strong>Category:</strong> {selectedAsset.category_name}</p>
+                <p><strong>Purchase Date:</strong> {selectedAsset.purchasedate?.split('T')[0]}</p>
+                {selectedAsset.image && (
+                  <img
+                    src={`http://localhost:5000/Images/${selectedAsset.image}`}
+                    alt={selectedAsset.name}
+                    className="img-fluid"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

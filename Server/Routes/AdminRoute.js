@@ -6,22 +6,46 @@ import multer from "multer";
 import path from "path";
 
 const router = express.Router();
+// router.post("/adminlogin", (req, res) => {
+//     const sql = "SELECT * from admin where email = ? and password = ?"
+//     con.query(sql, [req.body.email, req.body.password], (err, result) => {
+//         if (err) return res.json({ loginStatus: false, Error: "incorrect credentials" })
+//         if (result.length > 0) {
+//             const email = result[0].email;
+//             const token = jwt.sign(
+//                 { role: "admin", email: email },
+//                 "jwt_secret_key",
+//                 { expiresIn: "1d" });
+//             res.cookie('token', token)
+//             return res.json({ loginStatus: true });
+//         } else {
+//             return res.json({ loginStatus: false, Error: "incorrect credentials" });
+//         }
+//     });
+// });
 router.post("/adminlogin", (req, res) => {
-    const sql = "SELECT * from admin where email = ? and password = ?"
-    con.query(sql, [req.body.email, req.body.password], (err, result) => {
-        if (err) return res.json({ loginStatus: false, Error: "incorrect credentials" })
-        if (result.length > 0) {
-            const email = result[0].email;
-            const token = jwt.sign(
-                { role: "admin", email: email },
-                "jwt_secret_key",
-                { expiresIn: "1d" });
-            res.cookie('token', token)
-            return res.json({ loginStatus: true });
-        } else {
-            return res.json({ loginStatus: false, Error: "incorrect credentials" });
-        }
+  const sql = "SELECT * FROM admin WHERE email = ?";
+  con.query(sql, [req.body.email], (err, result) => {
+    if (err) return res.json({ loginStatus: false, Error: "Database error" });
+    if (result.length === 0) {
+      return res.json({ loginStatus: false, Error: "User not found" });
+    }
+    const user = result[0];
+    bcrypt.compare(req.body.password, user.password, (err, isMatch) => {
+      if (err) return res.json({ loginStatus: false, Error: "Error comparing passwords" });
+
+      if (!isMatch) {
+        return res.json({ loginStatus: false, Error: "Incorrect credentials" });
+      }
+      const token = jwt.sign(
+        { role: "admin", email: user.email },
+        "jwt_secret_key",
+        { expiresIn: "1d" }
+      );
+      res.cookie("token", token);
+      return res.json({ loginStatus: true });
     });
+  });
 });
 router.post("/signup", (req, res) => {
   const { email, password } = req.body;
@@ -51,7 +75,6 @@ router.post("/signup", (req, res) => {
           console.error("Insert error:", err);
           return res.json({ Error: "Database insert error" });
         }
-
         return res.json({
           success: true,
           message: "User registered successfully",
@@ -114,7 +137,7 @@ router.get('/employee', (req, res) => {
             employee.email, 
             employee.image, 
             category.name AS category_name 
-        FROM employee 
+            FROM employee 
         JOIN category ON employee.category_id = category.id
     `;
     con.query(sql, (err, result) => {
@@ -188,31 +211,11 @@ router.get('/logout', (req, res) => {
     return res.json({Status: true})
 })
 
-
-// Asset routes
-// router.post('/add_asset', upload.none(), (req, res) => {
-//     console.log("Received asset:", req.body);
-//     const sql =  `INSERT INTO assets
-//     (asset_id, name, purchasedate, location, status, category_id) VALUES(?)`;
-//     const values = [
-//         req.body.asset_id,
-//         req.body.name,
-//         req.body.purchasedate,
-//         req.body.location,
-//         req.body.status,
-//         req.body.category_id,
-        
-// ];
-//     con.query(sql, [values], (err, result) => {
-//         if (err) return res.json({ Status: false, Error: "Query Error" });
-//         return res.json({ Status: true });
-//     });
-// });
-router.post('/add_asset', upload.none(), (req, res) => {
+router.post('/add_asset',upload.single("image"),(req, res) => {
     console.log("Received asset:", req.body);
 
     const sql = `INSERT INTO assets 
-      (asset_id, name, purchasedate, location, status, category_id) 
+      (asset_id, name, purchasedate, location, status, category_id, image) 
       VALUES (?)`;
 
     const values = [
@@ -222,6 +225,7 @@ router.post('/add_asset', upload.none(), (req, res) => {
         req.body.location,
         req.body.status,
         req.body.category_id,
+        req.file ? req.file.filename : null 
     ];
 
     con.query(sql, [values], (err, result) => {
@@ -241,6 +245,7 @@ router.get('/asset', (req, res) => {
             assets.purchasedate,
             assets.location,
             assets.status,
+             assets.image, 
             category.name AS category_name
             FROM assets
             JOIN category ON assets.category_id = category.id
@@ -346,6 +351,22 @@ router.put('/edit_category/:id', (req, res) => {
     if (err) return res.json({ Status: false, Error: "Query Error: " + err });
     return res.json({ Status: true, Result: result });
   });
+});
+router.get('/latest_asset', (req, res) => {
+  con.query(
+    "SELECT asset_id FROM assets ORDER BY asset_id DESC LIMIT 1",
+    (err, rows) => {
+      if (err) {
+        return res.json({ Status: false, Error: err.message });
+      }
+
+      if (rows.length > 0) {
+        res.json({ Status: true, latestId: rows[0].asset_id });
+      } else {
+        res.json({ Status: true, latestId: null });
+      }
+    }
+  );
 });
 
 export { router as adminRouter };

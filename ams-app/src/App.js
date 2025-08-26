@@ -1,4 +1,4 @@
-import './App.css';
+
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Login from './components/Login';
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
@@ -20,21 +20,17 @@ import ForgotPass from './components/ForgotPass';
 import VerifyOtp from './components/VerifyOtp'; 
 import ResetPassword from "./components/ResetPassword";
 
-
 function App() {
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/adminlogin' element={<Login />}></Route>
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="ForgotPass" element={<ForgotPass />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        
-        
-        {/* <Route path="/forgot-password" element={<ForgotPass />} /> */}
-        <Route path='/dashboard' element={<Dashboard />}> 
+          <Route path='/adminlogin' element={<Login />}></Route>
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="ForgotPass" element={<ForgotPass />} />
+          <Route path="/verify-otp" element={<VerifyOtp />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path='/dashboard' element={<Dashboard />}> 
           <Route path='' element={<Home />}></Route>
           <Route path='/dashboard/employee' element={<Employee />}></Route>
           <Route path='/dashboard/asset'element={<Asset />}></Route>

@@ -32,11 +32,12 @@ const Addemployee = () => {
     const handleSubmit = (e) => {
       e.preventDefault()
        const formData = new FormData();
-    formData.append('name', employee.name);
-    formData.append('email', employee.email);
-    formData.append('password', employee.password);
-    formData.append('image', employee.image);
-    formData.append('category_id', employee.category_id);
+      formData.append('name', employee.name);
+      formData.append('image', employee.image); 
+      formData.append('email', employee.email);
+      formData.append('password', employee.password);
+      formData.append('image', employee.image);
+      formData.append('category_id', employee.category_id);
         axios.post('http://localhost:5000/auth/add_employee', formData)
           .then(result => {
               if(result.data.Status) {
@@ -92,13 +93,13 @@ const Addemployee = () => {
               })}
             </select>
           </div>
-                   <div className='col-12'>
-                    <label className='form-label' for='inputGroupFile01'>Select Image</label>
-            <input type="file"
-              className='form-control rounded-0'
-              id='inputGroupFile01'
-              name='image'
-                      onChange={(e) =>
+            <div className='col-12'>
+              <label className='form-label' for='inputGroupFile01'>Select Image</label>
+                <input type="file"
+                   className='form-control rounded-0'
+                     id='inputGroupFile01'
+                       name='image'
+                        onChange={(e) =>
                             setEmployee({ ...employee, image: e.target.files[0] })
                               }/>
                   </div>
