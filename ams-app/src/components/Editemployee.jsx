@@ -181,16 +181,22 @@ const Editemployee = () => {
               onChange={(e) =>
                 setEmployee({ ...employee, category_id: e.target.value })}
             >
-              <option value="">-- Select Category --</option>
+              <option value="">Select Category</option>
               {category.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           </div>
-          <div className='col-12'>
-            <button type='submit' className='btn w-100 rounded-0 mb-2 burnt-orange-btn'>
-              Edit Employee
+           <div className="d-flex gap-2">
+            <button
+            type="submit" className="btn btn-danger px-2 py-2">Update Employee</button>
+           <button 
+                type='button' 
+                 className='btn btn-outline-secondary px-4 py-2'
+                  onClick={() => navigate('/dashboard/employee')}
+                 >Cancel
             </button>
+            
           </div>
         </form>
       </div>

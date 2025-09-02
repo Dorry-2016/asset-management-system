@@ -19,6 +19,9 @@ import Editcategory from './components/Editcategory';
 import ForgotPass from './components/ForgotPass';
 import VerifyOtp from './components/VerifyOtp'; 
 import ResetPassword from "./components/ResetPassword";
+import AssetOverview from './components/AssetOverview';
+import AssignAssetModal from "./components/AssignAssetModal";
+
 
 function App() {
 
@@ -35,13 +38,16 @@ function App() {
           <Route path='/dashboard/employee' element={<Employee />}></Route>
           <Route path='/dashboard/asset'element={<Asset />}></Route>
           <Route path='/dashboard/category' element={<Category />}></Route>
+          <Route path='/dashboard/edit_category/:id' element={<Editcategory />}></Route>
           <Route path='/dashboard/profile' element={<Profile />}></Route>
           <Route path='/dashboard/add_category' element={<Addcategory />}></Route>
           <Route path='/dashboard/add_employee' element={<Addemployee />}></Route>
           <Route path='/dashboard/edit_employee/:id' element={<Editemployee />}></Route>
           <Route path='/dashboard/add_asset' element={<Addasset />}></Route>
           <Route path='/dashboard/edit_asset/:id' element={<Editasset />}></Route>
-          <Route path="/dashboard/edit_category/:id" element={<Editcategory />} />
+          <Route path="/dashboard/assetoverview/:id" element={<AssetOverview />} />
+          <Route path="/dashboard/assignasset/" element={<AssignAssetModal />} />
+
         </Route>
       </Routes>
     </BrowserRouter>

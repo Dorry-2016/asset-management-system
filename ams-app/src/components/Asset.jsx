@@ -1,100 +1,4 @@
 
-// import axios from "axios";
-// import React, { useState, useEffect } from 'react';
-// import { Link, useNavigate } from "react-router-dom";
-
-
-
-// const Asset = () => {
-//   const [asset, setAsset] = useState([]);
-//     const navigate = useNavigate()
-//   useEffect(() => {
-//     axios.get("http://localhost:5000/auth/asset")
-//       .then((result) => {
-//         if (result.data.Status) {
-//           setAsset(result.data.Result);
-//         } else {
-//           alert(result.data.Error);
-//         }
-//       })
-//       .catch((err) => console.log(err));
-//   }, []);
-//   const handleDelete = (id) => {
-    
-//     axios.delete('http://localhost:5000/auth/delete_asset/'+id)
-//     .then(result => {
-//         if(result.data.Status) {
-//             window.location.reload()
-//         } else {
-//             alert(result.data.Error)
-//         }
-//     })
-//   }
-   
-//   return (
-//     <div className='px-5 mt-3'>
-//       <div  className='d-flex justify-content-center'>
-//         <h2>Asset List</h2>
-//       </div>
-//       <Link to="/dashboard/add_asset" className='burnt-red-btn'>+</Link>
-//       <div className='mt-3'>
-//         <table className="table">
-//           <thead>
-//             <tr>
-//               <th>asset_id</th>
-//               <th>Name</th>
-//               <th>Location</th>
-//               <th>Purchase date</th>
-//               <th>Status</th>
-//               <th>category</th>
-//                <th>Action</th>
-              
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {asset.map((e) => (
-//               <tr>
-//                 <td>{e.asset_id}</td>
-//                 <td>{e.name}</td>
-//                 <td>{e.location}</td>
-//                 <td>{e.purchasedate?.split('T')[0]}</td>
-//                 <td>{e.status}</td>
-//                 <td>{e.category_name}</td>
-//                 <td>
-                 
-//                    <button className="btn btn-warning btn-sm me-2"
-//                     title="view"
-//                   >
-//                     <i className="bi bi-eye"></i>
-//                   </button>
-//                   <Link
-//                     to={`/dashboard/edit_asset/${e.asset_id}`}
-//                     className="btn btn-primary btn-sm me-2"
-//                     edit
-//                   >
-//                      <i className="bi bi-pencil-square"></i>
-//                   </Link>
-//                   <button className="btn btn-danger btn-sm me-2"
-//                     onClick={() =>
-//                       handleDelete(e.asset_id)}
-//                    delete
-//                   >
-//                     <i className="bi bi-trash"></i>
-//                   </button>
-                 
-//                 </td>
-
-//               </tr>
-//             ))}
-//           </tbody>
-//           </table>
-//       </div>
-//     </div>
-    
-//   )
-// }
-
-// export default Asset
 import axios from "axios";
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from "react-router-dom";
@@ -105,7 +9,7 @@ const Asset = () => {
   const [filterStatus, setFilterStatus] = useState('All');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  const [selectedAsset, setSelectedAsset] = useState(null);
+  const [selectedAssets, setSelectedAssets] = useState([]);
 
   const navigate = useNavigate();
 
@@ -125,22 +29,56 @@ const Asset = () => {
     axios.delete('http://localhost:5000/auth/delete_asset/' + id)
       .then(result => {
         if (result.data.Status) {
-          // Reload assets after delete
           setAsset(prev => prev.filter(a => a.asset_id !== id));
+          setSelectedAssets(prev => prev.filter(aid => aid !== id));
         } else {
           alert(result.data.Error);
         }
-      })
-  }
-  const filteredAssets = asset.filter((a) => {
-    const matchesSearch = a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          a.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          (a.category_name && a.category_name.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesStatus = filterStatus === 'All' || a.status === filterStatus;
+      });
+  };
 
+  const handleBulkDelete = () => {
+    if (selectedAssets.length === 0) {
+      alert("No assets selected");
+      return;
+    }
+    if (!window.confirm("Are you sure you want to delete selected assets?")) return;
+
+    Promise.all(
+      selectedAssets.map(id => axios.delete(`http://localhost:5000/auth/delete_asset/${id}`))
+    )
+      .then(() => {
+        setAsset(prev => prev.filter(a => !selectedAssets.includes(a.asset_id)));
+        setSelectedAssets([]);
+      })
+      .catch(err => console.log(err));
+  };
+
+  const toggleRow = (id) => {
+    setSelectedAssets(prev =>
+      prev.includes(id) ? prev.filter(aid => aid !== id) : [...prev, id]
+    );
+  };
+
+  const toggleAll = () => {
+    if (selectedAssets.length === currentAssets.length) {
+      setSelectedAssets([]);
+    } else {
+      setSelectedAssets(currentAssets.map(a => a.asset_id));
+    }
+  };
+
+  
+  const filteredAssets = asset.filter((a) => {
+    const matchesSearch =
+      a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      a.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (a.category_name && a.category_name.toLowerCase().includes(searchTerm.toLowerCase()));
+    const matchesStatus = filterStatus === 'All' || a.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
 
+  
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentAssets = filteredAssets.slice(indexOfFirstItem, indexOfLastItem);
@@ -151,8 +89,9 @@ const Asset = () => {
   return (
     <div className='px-5 mt-3'>
       <div className='d-flex justify-content-center'>
-        <h2>Asset List</h2>
+        <h2 >All Assets</h2>
       </div>
+
       <div className="d-flex mt-3 mb-3">
         <input
           type="text"
@@ -160,7 +99,7 @@ const Asset = () => {
           value={searchTerm}
           onChange={e => {
             setSearchTerm(e.target.value);
-            setCurrentPage(1); 
+            setCurrentPage(1);
           }}
           className="form-control me-3"
           style={{ maxWidth: "300px" }}
@@ -170,7 +109,7 @@ const Asset = () => {
           value={filterStatus}
           onChange={e => {
             setFilterStatus(e.target.value);
-            setCurrentPage(1); 
+            setCurrentPage(1);
           }}
           className="form-select"
           style={{ maxWidth: "150px" }}
@@ -181,7 +120,17 @@ const Asset = () => {
           <option value="Maintenance">Maintenance</option>
           <option value="Retired">Retired</option>
         </select>
-         <div className="flex-grow-1" />
+
+        <div className="flex-grow-1" />
+
+        <button
+          className="btn btn-danger me-3"
+          onClick={handleBulkDelete}
+          disabled={selectedAssets.length === 0}
+        >
+          Delete Selected
+        </button>
+
         <Link
           to="/dashboard/add_asset"
           className="burnt-red-btn d-inline-flex align-items-center justify-content-center"
@@ -196,10 +145,21 @@ const Asset = () => {
           +
         </Link>
       </div>
-      <div>
-        <table className="table">
+
+      <div className="table-responsive bg-white shadow-sm" style={{ borderRadius: '15px', overflow: 'hidden' }}>
+        <table className="table table-hover mb-0">
           <thead>
             <tr>
+              <th>
+                <input
+                  type="checkbox"
+                  onChange={toggleAll}
+                  checked={
+                    selectedAssets.length === currentAssets.length &&
+                    currentAssets.length > 0
+                  }
+                />
+              </th>
               <th>asset_id</th>
               <th>Name</th>
               <th>Location</th>
@@ -207,43 +167,62 @@ const Asset = () => {
               <th>Status</th>
               <th>Category</th>
               <th>Image</th>
+              <th>Assigned To</th>
+              
               <th>Action</th>
+              
             </tr>
           </thead>
           <tbody>
             {currentAssets.length === 0 ? (
               <tr>
-                <td colSpan="7" className="text-center">No assets found.</td>
+                <td colSpan="9" className="text-center">No assets found.</td>
               </tr>
             ) : (
               currentAssets.map((e) => (
-                <tr key={e.asset_id}>
+                <tr
+                  key={e.asset_id}
+                  className={selectedAssets.includes(e.asset_id) ? "table-active" : ""}
+                >
+                  <td>
+                    <input
+                      type="checkbox"
+                      checked={selectedAssets.includes(e.asset_id)}
+                      onChange={() => toggleRow(e.asset_id)}
+                    />
+                  </td>
                   <td>{e.asset_id}</td>
                   <td>{e.name}</td>
                   <td>{e.location}</td>
                   <td>{e.purchasedate?.split('T')[0]}</td>
                   <td>{e.status}</td>
                   <td>{e.category_name}</td>
-                  <td><img
-                    src={`http://localhost:5000/Images/${e.image}`}
-                    className="asset_image"
-                    alt={e.name} 
-                     
-                  /></td>
                   <td>
-                    <button className="btn btn-warning btn-sm me-2"
-                      title="view"
-                       onClick={() => setSelectedAsset(e)}
+                    <img
+                      src={`http://localhost:5000/Images/${e.image}`}
+                      className="asset_image"
+                      alt={e.name}
+                      
+                    />
+                    
+                  </td>
+                  <td>{e.assigned_to}</td> 
+                  <td>
+                    <Link
+                      to={`/dashboard/assetoverview/${e.asset_id}`}
+                      state={{ asset: e }}
+                      className="btn btn-warning btn-sm me-2"
                     >
                       <i className="bi bi-eye"></i>
-                    </button>
+                    </Link>
                     <Link
                       to={`/dashboard/edit_asset/${e.asset_id}`}
                       className="btn btn-primary btn-sm me-2"
                     >
                       <i className="bi bi-pencil-square"></i>
                     </Link>
-                    <button className="btn btn-danger btn-sm me-2"
+                    <button
+                      className="btn btn-danger btn-sm me-2"
                       onClick={() => handleDelete(e.asset_id)}
                       title="delete"
                     >
@@ -257,22 +236,23 @@ const Asset = () => {
         </table>
       </div>
 
-      <nav aria-label="Page navigation example">
+      <nav aria-label="Page navigation example"className="mt-4">
         <ul className="pagination justify-content-center">
           <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
             <button onClick={() => changePage(currentPage - 1)} className="page-link">
               Previous
             </button>
           </li>
-
           {[...Array(totalPages).keys()].map((num) => (
-            <li key={num + 1} className={`page-item ${currentPage === num + 1 ? 'active' : ''}`}>
+            <li
+              key={num + 1}
+              className={`page-item ${currentPage === num + 1 ? 'active' : ''}`}
+            >
               <button onClick={() => changePage(num + 1)} className="page-link">
                 {num + 1}
               </button>
             </li>
           ))}
-
           <li className={`page-item ${currentPage === totalPages ? 'disabled' : ''}`}>
             <button onClick={() => changePage(currentPage + 1)} className="page-link">
               Next
@@ -280,33 +260,8 @@ const Asset = () => {
           </li>
         </ul>
       </nav>
-      {selectedAsset && (
-        <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog">
-            <div className="modal-content">
-              <div className="modal-header">
-                <button type="button" className="btn-close" onClick={() => setSelectedAsset(null)}></button>
-              </div>
-              <div className="modal-body">
-                <p><strong>Name:</strong> {selectedAsset.name}</p>
-                <p><strong>Location:</strong> {selectedAsset.location}</p>
-                <p><strong>Status:</strong> {selectedAsset.status}</p>
-                <p><strong>Category:</strong> {selectedAsset.category_name}</p>
-                <p><strong>Purchase Date:</strong> {selectedAsset.purchasedate?.split('T')[0]}</p>
-                {selectedAsset.image && (
-                  <img
-                    src={`http://localhost:5000/Images/${selectedAsset.image}`}
-                    alt={selectedAsset.name}
-                    className="img-fluid"
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
-  )
-}
+  );
+};
 
 export default Asset;

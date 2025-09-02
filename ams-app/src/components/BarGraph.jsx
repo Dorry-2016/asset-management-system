@@ -27,7 +27,7 @@ const BarGraph = () => {
     }}>
        <h6 style={{ textAlign: "center", marginBottom: "10px" }}>
       Asset Distribution by Name </h6>
-    <BarChart width={350} height={300} data={data} barSize={40}>
+    <BarChart width={350} height={200} data={data} barSize={40}>
       <XAxis dataKey="asset" axisLine={false} tickLine={false}/>
       <YAxis  hide />
         <Tooltip cursor={{ fill: "rgba(0,0,0,0.05)" }} />

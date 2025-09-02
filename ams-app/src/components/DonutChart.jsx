@@ -34,7 +34,7 @@ const DonutChart = () => {
 
   return (
     <div style={{
-      backgroundColor: "#fff",
+      backgroundColor: "white",
       padding: "20px",
       borderRadius: "10px",
       overflow: "hidden"
@@ -45,7 +45,7 @@ const DonutChart = () => {
        }}>
       Asset Distribution by Category</h6>
 
-    <PieChart width={350} height={300}>
+    <PieChart width={350} height={200}>
       <Pie
         data={data}
         cx="50%"

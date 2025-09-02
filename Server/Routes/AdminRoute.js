@@ -112,33 +112,38 @@ const upload = multer({
     storage: storage
 })
 
-router.post('/add_employee',upload.single('image') ,(req, res) => {
-    const sql = "INSERT INTO employee(name, email, password,category_id,image)VALUES(?)";
-    bcrypt.hash(req.body.password.toString(), 10, (err, hash) => {
-        if (err) return res.json({ Status: false, Error: " Query Error:" })
-        const values = [
-            req.body.name,
-            req.body.email,
-            hash,
-            req.body.category_id,
-            req.file.filename
-        ]
-        con.query(sql, [values], (err, result) => {
-            if (err) return res.json({ Status: false, Error: err})
-            return res.json({ Status: true })
-        })
-    })
-})   
+router.post('/add_employee', upload.single('image'), (req, res) => {
+  const sql = "INSERT INTO employee(name, email,staff_no,category_id,image)VALUES(?)";
+  
+  const values = [
+    req.body.name,
+    req.body.email,
+    req.body.staff_no,
+    req.body.category_id,
+    req.file ? req.file.filename : null
+  ]
+  con.query(sql, [values], (err, result) => {
+    if (err) {
+      console.error("SQL Error:", err);  
+      return res.json({ Status: false, Error: err });
+    }
+    return res.json({ Status: true })
+  });
+}); 
 router.get('/employee', (req, res) => {
      const sql = `
         SELECT 
-            employee.id, 
+            employee.id AS id, 
             employee.name, 
-            employee.email, 
+            employee.email,
+            employee.staff_no,
             employee.image, 
-            category.name AS category_name 
+            category.name AS category_name
+            
+
             FROM employee 
         JOIN category ON employee.category_id = category.id
+        
     `;
     con.query(sql, (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"})
@@ -154,7 +159,7 @@ router.get('/employee/:id', (req, res) => {
     })
 })
 router.put('/edit_employee/:id', (req, res) => {
-    const id = req.params.id;
+    
     const sql = `UPDATE employee 
         set name = ?, email = ?,  category_id = ? 
         Where id = ?`
@@ -164,10 +169,10 @@ router.put('/edit_employee/:id', (req, res) => {
         req.body.category_id,
         req.params.id
     ]
-    con.query(sql,[...values, id], (err, result) => {
-        if(err) return res.json({Status: false, Error: "Query Error"+err})
-        return res.json({Status: true, Result: result})
-    })
+    con.query(sql, values, (err, result) => {
+    if(err) return res.json({Status: false, Error: "Query Error"+err})
+    return res.json({Status: true, Result: result})
+})
 })
 router.delete('/delete_employee/:id', (req, res) => {
     const id = req.params.id;
@@ -215,7 +220,7 @@ router.post('/add_asset',upload.single("image"),(req, res) => {
     console.log("Received asset:", req.body);
 
     const sql = `INSERT INTO assets 
-      (asset_id, name, purchasedate, location, status, category_id, image) 
+      (asset_id, name, purchasedate, location, status, category_id, image, assigned to) 
       VALUES (?)`;
 
     const values = [
@@ -225,7 +230,8 @@ router.post('/add_asset',upload.single("image"),(req, res) => {
         req.body.location,
         req.body.status,
         req.body.category_id,
-        req.file ? req.file.filename : null 
+      req.file ? req.file.filename : null ,
+        req.body.assigned_to
     ];
 
     con.query(sql, [values], (err, result) => {
@@ -245,10 +251,12 @@ router.get('/asset', (req, res) => {
             assets.purchasedate,
             assets.location,
             assets.status,
-             assets.image, 
+            assets.category_id, 
+            assets.image, 
             category.name AS category_name
             FROM assets
             JOIN category ON assets.category_id = category.id
+            
     `;
     con.query(sql, (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"})
@@ -368,5 +376,102 @@ router.get('/latest_asset', (req, res) => {
     }
   );
 });
+
+router.post("/add_assignment", (req, res) => {
+    console.log("Received assignment:", req.body);
+
+    const sql = `INSERT INTO assignments 
+      (asset_name,assigned_to, location, description, category, assign_date) 
+      VALUES (?,?,?,?,?,?)`;
+
+  const values = [
+    
+     req.body.asset_name,
+    req.body.assigned_to,
+     req.body.location,   
+    req.body.description,
+    req.body.category,
+   
+    req.body.assign_date
+    ];
+console.log("Insert values:", values); 
+
+  con.query(sql,values, (err, result) => {
+    if (err) {
+      console.error("SQL Error:", err);
+      return res.json({ Status: false, Error: "Query Error", SQL_Error: err.sqlMessage });
+    }
+    return res.json({ Status: true, Message: "Assignment added successfully" });
+    });
+});
+
+router.get("/employees", (req, res) => {
+    const sql = "SELECT id, name FROM employee"; 
+    con.query(sql, (err, result) => {
+        if (err) {
+            console.error("SQL Error:", err);
+            return res.json({ Status: false, Error: "Query Error", SQL_Error: err.sqlMessage });
+        }
+        return res.json({ Status: true, Result: result });
+    });
+});
+
+router.get("/assets", (req, res) => {
+  const sql = "SELECT  name FROM assets"; 
+  con.query(sql, (err, result) => {
+    if (err) {
+      return res.json({ Status: false, Error: "Query error: " + err });
+    }
+    return res.json({ Status: true, Result: result });
+  });
+});
+// this api has an issue
+// router.get("/assets/:id/assignments", (req, res) => {
+//   const assetId = req.params.id;
+//   const sql = "SELECT * FROM assignments WHERE asset_name = ?";
+//   con.query(sql, [asset_name], (err, results) => {
+//     if (err) return res.json({ Error: err.message });
+//     return res.json(results);
+//   });
+// });
+// router.get("/assets/:id/assignments", (req, res) => {
+//   const assetId = req.params.id;
+//   const sql = `
+//     SELECT a.id, a.assigned_to, a.location, a.description, a.status,
+//            a.assign_date,
+//            assets.name AS asset_name,
+//            categories.name AS category
+//     FROM assignments a
+//     JOIN assets ON a.asset_id = assets.asset_id
+//     JOIN categories ON a.category_id = categories.id
+//     WHERE a.asset_id = ?`;
+  
+//   con.query(sql, [assetId], (err, results) => {
+//     if (err) return res.json({ Status: false, Error: err.message });
+//     return res.json({ Status: true, Result: results });
+//   });
+// });
+router.get("/assets/:id/assignments", (req, res) => {
+  const assetId = req.params.id;
+  const sql = `
+    SELECT a.id, a.assign_date, a.location, a.description, a.status,
+           e.name AS assigned_to,
+           asst.name AS asset_name,
+           c.name AS category
+    FROM assignments a
+    JOIN employees e ON a.assigned_to = e.employee_id
+    JOIN assets asst ON a.asset_id = asst.asset_id
+    JOIN categories c ON a.category_id = c.id
+    WHERE a.asset_id = ?`;
+  
+  con.query(sql, [assetId], (err, results) => {
+    if (err) return res.json({ Status: false, Error: err.message });
+    return res.json({ Status: true, Result: results });
+  });
+});
+
+
+
+
 
 export { router as adminRouter };

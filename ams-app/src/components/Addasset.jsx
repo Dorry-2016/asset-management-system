@@ -135,12 +135,14 @@ const Addasset = () => {
     asset_id: "",
     name: "",
     category_id: "",
+    employee_id: "",
     purchasedate: "",
     location: "",
     status: "active ",
   });
 
   const [category, setCategory] = useState([]);
+  const [employee, setEmployee] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -155,6 +157,15 @@ const Addasset = () => {
       .catch(err => {
         console.log(err)
       });
+    axios.get('http://localhost:5000/auth/employee')
+    .then(result => {
+      if (result.data.Status) {
+        setEmployee(result.data.Result);
+      } else {
+        alert(result.data.Error);
+      }
+    })
+    .catch(err => console.log(err));
     axios.get('http://localhost:5000/admin/latest_asset')
       .then(result => {
         if (result.data.Status) {
@@ -242,7 +253,21 @@ const Addasset = () => {
                 ))}
               </select>
             </div>
-
+            {/* <div className="col-md-6">
+              <label htmlFor="employee" className='form-label fw-semibold'>User <span className="text-danger">*</span></label>
+              <select
+                id="employee"
+                className='form-select'
+                required
+                value={asset.employee_id}
+                onChange={e => setAsset({ ...asset, employee_id: e.target.value })}
+              >
+                <option value="" disabled>Select Employee</option>
+                {employee.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div> */}
             <div className="col-md-6">
               <label htmlFor="inputPurchaseDate" className='form-label fw-semibold'>Purchase Date <span className="text-danger">*</span></label>
               <input

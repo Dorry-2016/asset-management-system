@@ -5,6 +5,7 @@ import { FaUserShield, FaUsers, FaListAlt, FaBox } from 'react-icons/fa'
 import './style.css';
 import DonutChart from './DonutChart';
 import BarGraph from './BarGraph';
+import Asset from './Asset';
 
 const cardStyles = {
   admin: {
@@ -81,7 +82,7 @@ const Home = () => {
       style={{
         backgroundColor: style.backgroundColor,
         color: style.color,
-        minWidth: 220,
+        minWidth: 180,
         flex: '1 1 220px',
         maxWidth: 250,
         minHeight: 80,
@@ -107,7 +108,6 @@ const Home = () => {
         </div>
          <div className="d-flex flex-column">
            <h6 className="mb-1">{title}</h6>
-      
         <h2 className="mb-0" style={{ fontWeight: 'bold' }}>{total}</h2>
       </div>
       </div>
@@ -125,19 +125,16 @@ const Home = () => {
       <h4 className="mb-0">Welcome to the Asset Management System</h4>
       <h6 className="mb-4">Track and manage channel transactions here</h6>
 
-      <div className="d-flex flex-wrap justify-content-between">
+      <div className="row g-3 mb-3 justify-content-center">
+        
         <StatCard 
-          title="Total Admins" 
-          total={adminTotal} 
-          icon={FaUserShield} 
-          style={cardStyles.admin} 
-        />
-        {/* <StatCard 
           title="Total Employees" 
           total={employeeTotal} 
           icon={FaUsers} 
           style={cardStyles.employee} 
-        /> */}
+          />
+         
+          
         <StatCard 
           title="Total Categories" 
           total={categoryTotal} 
@@ -159,30 +156,32 @@ const Home = () => {
       </div>
       <div className="row mt-3 g-2">
         <div className="col-md-6 d-flex justify-content-center">
-          <div className=""
+          <div
             style={{
-              maxWidth: 500,
+              maxWidth: 400,
               width: '100%',
-              height: '100px',
+              height: 220,
               backgroundColor: "#fff",
+              borderRadius: 10,
             }}>
             <DonutChart data={categoryData} />
           </div>
         </div>
         <div className="col-md-6 d-flex justify-content-center">
-          <div className=""
+          <div
             style={{
-              maxWidth: 500,
+              maxWidth: 400,
               width: '100%',
-                height: '100px',
-
+              height: 220,
             }}>
             <BarGraph data={assetNameData} />
           </div>
         </div>
       </div>
-
-    </div>
+       <div className=" row mt-4 p-3"> 
+       <Asset />
+  </div>
+ </div>
   );
 };
 
